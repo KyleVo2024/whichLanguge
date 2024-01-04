@@ -7,37 +7,51 @@ import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) throws FileNotFoundException {
+        // change what file its reading. Changes depending on what computer its on
         File input = new File("/home/kylevo/Desktop/JavaTest/DuskBringer/src/input4.txt");
         Scanner scan = new Scanner(input);
 
+        // cleans string of most special characters
         String data = scan.nextLine().toLowerCase().replaceAll("[-+.^:,()!’]", "").replaceAll("\\s", "")
                 .replaceAll("\\d", "").replaceAll(";", "");
+
         scan.close();
         char letter[] = data.toCharArray();
 
+        // 2D array of Letter freqency CSV file
         double[][] freqLang = new double[87][16];
         ArrayList<Character> freqLangKey = new ArrayList<Character>();
 
+        // Array of the Letters in the sentence
         double[] freqSen = new double[data.length()];
         ArrayList<Character> freqSenKey = new ArrayList<Character>();
 
+        // All languges its able to read
         List<String> lang = Arrays.asList("English", "French", "German", "Spanish", "Portuguese", "Esperanto",
                 "Italian", "Turkish", "Swedish", "Polish", "Dutch", "Danish", "Icelandic", "Finnish", "Czech",
                 "Hungarian");
+        // keeps track of the Chi-Square of each languge
         double[] langNum = new double[16];
         int index = 0;
 
-        readFreq(freqLang, freqLangKey);
-        readSen(data, letter, freqSen, freqSenKey);
-        freqSen = Arrays.copyOf(freqSen, freqSenKey.size());
-        double d=0;
-        for (int i = 0; i < freqSenKey.size() - 1; i++) { // goes throught the sentence
-            for (index = 0; index < freqLangKey.size(); index++) { // finds matching letter
+        readFreq(freqLang, freqLangKey); // puts the CSV file into a 2d array
+        readSen(data, letter, freqSen, freqSenKey);// Finds the letter freqency of the sentence
+        freqSen = Arrays.copyOf(freqSen, freqSenKey.size()); // rezies the sentence letter freqency
+
+        double d = 0; // doubles don't have ^ as a function so this has to be done :,(
+
+        // Goes throught the sentence letter by letter
+        for (int i = 0; i < freqSenKey.size() - 1; i++) {
+            // Finds matching letter in the CSV file
+            for (index = 0; index < freqLangKey.size(); index++) {
                 if (freqSenKey.get(i) == freqLangKey.get(index)) {
-                    for (int j = 0; j < freqLang[0].length; j++) { // goes through all languges
-                        d=freqSen[i]*100-freqLang[index][j];
-                        langNum[j] = langNum[j]+(d*d)/freqLang[0][j];
+                    // Goes through all languges to calculate the Chi-Square for the letter at int i
+                    for (int j = 0; j < freqLang[0].length; j++) {
+                        //Math
+                        d = freqSen[i] * 100 - freqLang[index][j];
+                        langNum[j] = langNum[j] + (d * d) / freqLang[0][j];
                     }
+                    // Goes back to start the next letter in the sentence
                     break;
                 }
             }
